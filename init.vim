@@ -203,5 +203,9 @@ let g:VM_maps = {}
 let g:VM_maps['Find Under'] =         '<C-d>'
 let g:VM_maps['Find Subword Under'] = '<C-d>'
 
-source ~/AppData/Local/nvim/cp.vim
+if has('win32')
+    source ~/AppData/Local/nvim/cp.vim
+else
+    source $HOME/.config/nvim/cp.vim
+endif
 
