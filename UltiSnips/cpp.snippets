@@ -1,0 +1,295 @@
+snippet c "c"
+#include <bits/stdc++.h>
+using namespace std;
+using pll = pair<long long, long long>;
+#define ll long long
+#define all(x) (x).begin(), (x).end()
+#define rall(x) (x).rbegin(), (x).rend()
+#define pb push_back
+#define eb emplace_back
+#define f first
+#define s second
+template<typename A, typename B> ostream& operator<<(ostream &os, const pair<A, B> &p) { return os << '(' << p.first << ", " << p.second << ')'; }
+template<typename T_container, typename T = typename enable_if<!is_same<T_container, string>::value, typename T_container::value_type>::type> ostream& operator<<(ostream &os, const T_container &v) { os << '{'; string sep; for (const T &x : v) os << sep << x, sep = ", "; return os << '}'; }
+// http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0200r0.html
+template<class Fun> class y_combinator_result {
+    Fun fun_;
+public:
+    template<class T> explicit y_combinator_result(T &&fun): fun_(std::forward<T>(fun)) {}
+    template<class ...Args> decltype(auto) operator()(Args &&...args) { return fun_(std::ref(*this), std::forward<Args>(args)...); }
+};
+template<class Fun> decltype(auto) y_combinator(Fun &&fun) { return y_combinator_result<std::decay_t<Fun>>(std::forward<Fun>(fun)); }
+#ifdef I_AM_NOOB
+#define gg(...) [](const auto&...x){ char c='='; cerr<<#__VA_ARGS__; ((cerr<<exchange(c,',')<<x),...); cerr<<endl; }(__VA_ARGS__);
+#else
+#define gg(...) 777771449
+#endif
+
+constexpr ll INFF = 1e18;
+constexpr ll P = 1e9+7;
+// constexpr ll P = 998244353;
+
+int main() {
+    cin.tie(0) -> ios::sync_with_stdio(0);
+    
+	$1 
+    
+    return 0;
+}
+endsnippet
+
+snippet tc "tc"
+int T; cin >> T; while (T--) {
+	$1
+}
+endsnippet
+
+snippet binpow "binpow"
+ll binpow(ll a, ll b) {
+    ll res = 1;
+    while (b) {
+        if (b & 1) res = res * a % P;
+        b >>= 1;
+        a = a * a % P;
+    }
+
+    return res;
+}
+endsnippet
+
+snippet dsu "dsu"
+ll par[N];
+ll find(ll v) {
+    if (v == par[v]) return v;
+    return par[v] = find(par[v]);
+}
+void unite(ll a, ll b) {
+    if (find(a) != find(b)) {
+        par[b] = a;
+    }
+}
+endsnippet
+
+snippet dsu2 "dsu2"
+struct DSU {
+	vector<ll> e;
+	void init (ll n) { e = vector<ll> (n, -1); }
+	ll get (ll x) { return (e[x] < 0 ? x : e[x] = get(e[x])); }
+	bool sameSet (ll x, ll y) { return get(x) == get(y); }
+	ll size (ll x) { return -e[get(x)]; }
+	bool unite (ll x, ll y) {
+		x = get(x), y = get(y);
+		if (x == y) return 0;
+		if (e[x] > e[y]) swap(x, y);
+		e[x] += e[y];
+		e[y] = x;
+		return 1;
+	}
+};
+endsnippet
+
+snippet dxy "dxy"
+int dx[] = { 0, 0, 1, -1 };
+int dy[] = { 1, -1, 0, 0 };
+int dx[] = { 1, 1, 1, 0, 0, -1, -1, -1 };
+int dy[] = { -1, 0, 1, -1, 1, -1, 0, 1 };
+
+inline bool valid(int x, int y) {
+    return x < n && y < m && x >= 0 && y >= 0;
+}
+endsnippet
+
+snippet factmod "factmod"
+int factmod(int n, int p) {
+    vector<int> f(p);
+    f[0] = 1;
+    for (int i = 1; i < p; i++)
+        f[i] = f[i-1] * i % p;
+
+    int res = 1;
+    while (n > 1) {
+        if ((n/p) % 2)
+            res = p - res;
+        res = res * f[n%p] % p;
+        n /= p;
+    }
+    return res;
+}
+endsnippet
+
+snippet fenwick "fenwick"
+struct BIT {
+	int a[N],t[N];
+	int lowbit(int x){return x&(-x);}
+	void cg(int x,int c){while(x<N)t[x]+=c,x+=lowbit(x);}
+	int ask(int x){int r=0;while(x)r+=t[x],x-=lowbit(x);return r;}
+	int ask(int l,int r){return ask(r)-ask(l-1);}
+	void upd(int x){if(!a[x])cg(x,1);a[x]++;}
+	void del(int x){if(a[x]==1)cg(x,-1);a[x]--;}
+};
+endsnippet
+
+snippet infadd "infadd"
+//INFF should be 1e17
+inline ll mul(ll a, ll b) {
+    return (INFF / a > b ? a * b : INFF);
+}
+inline ll add(ll a, ll b) {
+    return (a+b >= INFF ? INFF : a+b);
+}
+endsnippet
+
+snippet prime "prime" 
+bool isPrime(int n) {
+    if (n <= 1) return false;
+    if (n <= 3) return true;
+    if (n % 2 == 0 || n % 3 == 0) return false;
+    for (int i = 5; i * i <= n; i = i + 6)
+        if (n % i == 0 || n % (i + 2) == 0)
+            return false;
+    return true;
+}
+endsnippet
+
+snippet lcm "lcm" 
+inline int gcd(int a, int b) { return (b == 0) ? a : gcd(b, a % b); }
+inline int lcm(int a, int b) { return a / gcd(a, b) * b; }
+endsnippet
+
+snippet mod2 "mod2" 
+#define mod2(a, n) ((a%n)+n)%n
+endsnippet
+
+snippet ncr "ncr"
+ll C(ll n, ll k) {
+    double res = 1;
+    for (ll i = 1; i <= k; ++i)
+        res = res * (n - k + i) / i;
+    return (ll)(res + 0.01);
+}
+endsnippet
+
+snippet ncr2 "ncr2" 
+constexpr ll MAX_FACT = 100000;
+vector<ll> fact(MAX_FACT+1, 1ll), inv(MAX_FACT+1, 1ll);
+ll C(ll n, ll k) {
+    if (n <= k) return 1;
+    ll res = (fact[n] * inv[k]) % MOD;
+    return (res * inv[n - k]) % MOD;
+}
+for (ll i = 1; i <= MAX_FACT; i++) {
+    fact[i] = (fact[i-1] * i) % MOD;
+    inv[i] = binpow(fact[i], MOD-2);
+}
+endsnippet
+
+snippet segtree "segtree"
+struct node {
+    node *l, *r;
+    ll v;
+    node(node* tl, node* tr) {
+        l = tl;
+        r = tr;
+        v = gcd(tl->v, tr->v);
+    }
+    node(ll x) {
+        l = r = nullptr;
+        v = x;
+    }
+};
+node* build(ll tl, ll tr) {
+    if (tl == tr - 1) return new node(a[tl]);
+    else {
+        ll tm = (tl + tr) / 2;
+        return new node(build(tl, tm), build(tm, tr));
+    }
+};
+ll query(node* t, ll tl, ll tr, ll l, ll r) {
+    if (l >= r) return 0;
+    if (tl == l && tr == r) return t->v;
+    ll tm = (tl + tr) / 2;
+    ll r1 = query(t->l, tl, tm, l, min(r, tm));
+    ll r2 = query(t->r, tm, tr, max(l, tm), r);
+    return gcd(r1, r2);
+}
+endsnippet
+
+snippet sieve "sieve" 
+constexpr int MAX_SIEVE = 1e7+5;
+vector<bool> isPrime(MAX_SIEVE, true);
+for (ll i = 2; i*i <= MAX_SIEVE; i++) {
+    if (isPrime[i])         
+        for (ll j = i*i; j <= MAX_SIEVE; j += i)
+            isPrime[j] = false;
+}
+endsnippet
+
+snippet KMP "KMP" 
+vector<ll> getF(string p) {
+    ll m = p.size();
+    vector<ll> F(m);
+
+    for (ll i = 1, k = 0; i < m; i++) {
+        while (k > 0 && p[k] != p[i]) k = F[k-1];
+
+        if (F[k] == F[i]) F[i] = ++k;
+        else F[i] = k;
+    }
+
+    return F;
+}
+
+ll KMP(string s, string p) {
+    ll n = s.size(), m = p.size();
+    ll res = 0;
+    vector<ll> F = getF(p);
+
+    for (ll i =0, k=0; i < n; i++) {
+        while (k > 0 && p[k] != s[i]) k = F[k-1];
+
+        if (p[k] == s[i]) k++;
+
+        if (k == m) {
+            res++;
+            k = F[k-1];
+        }
+    }
+
+    return res;
+}
+endsnippet
+
+snippet modint "modint"
+template <int MOD=mod2>
+struct Modular {
+  int value;
+  static const int MOD_value = MOD;
+
+  Modular(long long v = 0) { value = v % MOD; if (value < 0) value += MOD;}
+  Modular(long long a, long long b) : value(0){ *this += a; *this /= b;}
+
+  Modular& operator+=(Modular const& b) {value += b.value; if (value >= MOD) value -= MOD; return *this;}
+  Modular& operator-=(Modular const& b) {value -= b.value; if (value < 0) value += MOD;return *this;}
+  Modular& operator*=(Modular const& b) {value = (long long)value * b.value % MOD;return *this;}
+
+  friend Modular mexp(Modular a, long long e) {
+    Modular res = 1; while (e) { if (e&1) res *= a; a *= a; e >>= 1; }
+    return res;
+  }
+  friend Modular inverse(Modular a) { return mexp(a, MOD - 2); }
+
+  Modular& operator/=(Modular const& b) { return *this *= inverse(b); }
+  friend Modular operator+(Modular a, Modular const b) { return a += b; }
+  friend Modular operator-(Modular a, Modular const b) { return a -= b; }
+  friend Modular operator-(Modular const a) { return 0 - a; }
+  friend Modular operator*(Modular a, Modular const b) { return a *= b; }
+  friend Modular operator/(Modular a, Modular const b) { return a /= b; }
+  friend std::ostream& operator<<(std::ostream& os, Modular const& a) {return os << a.value;}
+  friend bool operator==(Modular const& a, Modular const& b) {return a.value == b.value;}
+  friend bool operator!=(Modular const& a, Modular const& b) {return a.value != b.value;}
+};
+endsnippet
+
+snippet rng "rng"
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+endsnippet

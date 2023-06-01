@@ -1,7 +1,11 @@
+filetype on             " enable filetype detection
+filetype plugin on      " load file-specific plugins
+filetype indent on      " load file-specific indentation
+
 " set clipboard+=unnamedplus
 vnoremap <C-c> "*y
 set nocompatible            " disable compatibility to old-time vi
-set mouse=v                 " middle-click paste with 
+set mouse=v                 " middle-click
 set hlsearch                " highlight search 
 set incsearch               " incremental search
 set tabstop=4               " number of columns occupied by a tab 
@@ -22,6 +26,8 @@ set updatetime=300
 set number relativenumber
 set nu rnu
 set splitright
+set so=999
+set encoding=utf-8
 highlight LineNr ctermfg=green
 highlight LineNrAbove ctermfg=grey
 highlight LineNrBelow ctermfg=grey
@@ -31,6 +37,9 @@ nnoremap <C-Z> u
 nnoremap <C-Y> <C-R>
 inoremap <C-Z> <C-O>u
 inoremap <C-Y> <C-O><C-R>
+
+" Use <leader>u in normal mode to refresh UltiSnips snippets
+nnoremap <leader>u <Cmd>call UltiSnips#RefreshSnippets()<CR>
 
 " Map OO and oo
 " nmap oo m`o<Esc>``
@@ -159,14 +168,25 @@ Plug 'pianocomposer321/project-templates.nvim', { 'do': ':UpdateRemotePlugins' }
 Plug 'tibabit/vim-templates'
 " Plug 'voidikss/vim-floaterm'
 Plug 'tpope/vim-surround'
-Plug 'github/copilot.vim'
+" Plug 'github/copilot.vim'
 Plug 'tpope/vim-fugitive'
 Plug 'sk1418/Join'
 Plug '907th/vim-auto-save'
 Plug 'mg979/vim-visual-multi', { 'branch': 'master' }
 Plug 'michaeljsmith/vim-indent-object'
+Plug 'lervag/vimtex'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+Plug 'chaoren/vim-wordmotion'
 
 call plug#end()
+
+" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 let g:coc_global_extensions = [
     \ 'coc-snippets',
