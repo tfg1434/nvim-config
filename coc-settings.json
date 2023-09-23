@@ -2,5 +2,7 @@
     "suggest.noselect": false,
     "clangd.arguments": [
         "-header-insertion=never"
-    ]
+        
+    ],
+    "snippets.ultisnips.pythonPrompt": false
 }

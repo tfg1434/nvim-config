@@ -32,6 +32,10 @@ highlight LineNr ctermfg=green
 highlight LineNrAbove ctermfg=grey
 highlight LineNrBelow ctermfg=grey
 
+" Allow saving of files as sudo when I forgot to start vim using sudo.
+cmap w!! w !sudo tee > /dev/null %
+com -bar W exe 'w !sudo tee >/dev/null %:p:S' | setl nomod
+
 " Map Ctrl-Z and Ctrl-Y
 nnoremap <C-Z> u
 nnoremap <C-Y> <C-R>
@@ -159,7 +163,7 @@ Plug 'morhetz/gruvbox'
 Plug 'jackguo380/vim-lsp-cxx-highlight'
 Plug 'scrooloose/nerdtree'
 Plug 'Xuyuanp/nerdtree-git-plugin'
-Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
+" Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'ryanoasis/vim-devicons'
 Plug 'ctrlpvim/ctrlp.vim'
 Plug 'scrooloose/nerdcommenter'
@@ -178,6 +182,7 @@ Plug 'lervag/vimtex'
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 Plug 'chaoren/vim-wordmotion'
+Plug 'lambdalisue/suda.vim'
 
 call plug#end()
 
@@ -202,6 +207,26 @@ let g:ctrlp_dont_split = 'NERD'
 let g:VM_maps = {}
 let g:VM_maps['Find Under'] =         '<C-d>'
 let g:VM_maps['Find Subword Under'] = '<C-d>'
+
+" Use tab for trigger completion with characters ahead and navigate
+" NOTE: There's always complete item selected by default, you may want to enable
+" no select by `"suggest.noselect": true` in your configuration file
+" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
+" other plugin before putting this into your config
+inoremap <silent><expr> <TAB>
+      \ coc#pum#visible() ? coc#pum#next(1) :
+      \ CheckBackspace() ? "\<Tab>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+
+" Make <CR> to accept selected completion item or notify coc.nvim to format
+" <C-g>u breaks current undo, please make your own choice
+inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+command! -nargs=0 Prettier :CocCommand prettier.forceFormatDocument
+vmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
 
 if has('win32')
     source ~/AppData/Local/nvim/cp.vim

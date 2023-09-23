@@ -34,11 +34,10 @@ function! TermWrapper(command) abort
 endfunction
 
 " cpp
-command! -nargs=0 CompileAndRun call TermWrapper(printf('g++ -std=c++17 %s && a.exe', expand('%')))
-command! -nargs=1 -complete=file CompileAndDebugWithFile call TermWrapper(printf('g++ -DI_AM_NOOB -std=c++17 -Wall -Wextra -O2 -Wshadow  -Wconversion -Wlogical-op -Wshift-overflow=2 -Wno-unused-variable -D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC %s && a.exe < %s', expand('%'), <q-args>))
-command! -nargs=1 -complete=file CompileAndRunWithFile call TermWrapper(printf('g++ -DI_AM_NOOB -std=c++17 %s && a.exe < %s', expand('%'), <q-args>))
-autocmd FileType cpp nnoremap <F5> :w \| :CompileAndRunWithFile "../input.txt"<CR>
-autocmd FileType cpp nnoremap <F6> :w \| :CompileAndDebugWithFile "../input.txt"<CR>
+if g:os == 'Darwin'
+    command! -nargs=1 -complete=file CompileAndRunWithFile call TermWrapper(printf('g++ -DI_AM_NOOB -D_GLIBCXX_DEBUG -D_GLIBCXX_SANITIZE_VECTOR -ggdb3 -fsanitize=address,undefined -std=c++17 %s && ./a.out < %s', expand('%'), <q-args>))
+    autocmd FileType cpp nnoremap <F5> :w \| :CompileAndRunWithFile "../input.txt"<CR>
+endif
 " python
 command! -nargs=1 -complete=file CompileAndRunPythonWithFile call TermWrapper(printf('python %s < %s', expand('%'), <q-args>))
 autocmd FileType python nnoremap <F5> :w \| :CompileAndRunPythonWithFile "../input.txt"<CR>
