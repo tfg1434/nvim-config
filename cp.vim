@@ -36,8 +36,11 @@ endfunction
 " cpp
 if g:os == 'Darwin'
     command! -nargs=1 -complete=file CompileAndRunWithFile call TermWrapper(printf('g++ -DI_AM_NOOB -D_GLIBCXX_DEBUG -D_GLIBCXX_SANITIZE_VECTOR -ggdb3 -fsanitize=address,undefined -std=c++17 %s && ./a.out < %s', expand('%'), <q-args>))
-    autocmd FileType cpp nnoremap <F5> :w \| :CompileAndRunWithFile "../input.txt"<CR>
 endif
+if g:os == 'Windows'
+    command! -nargs=1 -complete=file CompileAndRunWithFile call TermWrapper(printf('g++ -std=c++17 %s -DI_AM_NOOB -D_GLIBCXX_DEBUG -D_GLIBCXX_SANITIZE_VECTOR && a.exe < %s', expand('%'), <q-args>))
+endif
+autocmd FileType cpp nnoremap <F5> :w \| :CompileAndRunWithFile "../input.txt"<CR>
 " python
 command! -nargs=1 -complete=file CompileAndRunPythonWithFile call TermWrapper(printf('python %s < %s', expand('%'), <q-args>))
 autocmd FileType python nnoremap <F5> :w \| :CompileAndRunPythonWithFile "../input.txt"<CR>
