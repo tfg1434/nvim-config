@@ -49,11 +49,11 @@ tcT> ll upb(V<T>& a, const T& b) { return ll(ub(all(a),b)-bg(a)); }
 
 // loops
 #define FOR(i,a,b) for (ll i = (a); i < (b); ++i)
-#define f0(i,a) FOR(i,0,a)
-#define f1(i,a) FOR(i,1,a+1)
+#define F0R(i,a) FOR(i,0,a)
+#define F1R(i,a) FOR(i,1,a+1)
 #define ROF(i,a,b) for (ll i = (b)-1; i >= (a); --i)
 #define R0F(i,a) ROF(i,0,a)
-#define rep(a) f0(_,a)
+#define rep(a) F0R(_,a)
 #define each(a,x) for (auto& a: x)
 
 const ll P = 1e9+7; // 998244353;
@@ -185,7 +185,7 @@ inline namespace ToString {
 		stringstream ss; ss << fixed << setprecision(15) << v;
 		return ss.str(); } // default
 	tcT> str bit_vec(T t) { // bit vector to string
-		str res = "{"; f0(i,sz(t)) res += ts(t[i]);
+		str res = "{"; F0R(i,sz(t)) res += ts(t[i]);
 		res += "}"; return res; }
 	str ts(V<bool> v) { return bit_vec(v); }
 	template<size_t SZ> str ts(bitset<SZ> b) { return bit_vec(b); } // bit vector
@@ -216,7 +216,7 @@ inline namespace ToString {
 			vs tmp = ts_lev<lev-1>(t);
 			res.ins(end(res),all(tmp));
 		}
-		f0(i,sz(res)) {
+		F0R(i,sz(res)) {
 			str bef = " "; if (i == 0) bef = "{";
 			res[i] = bef+res[i];
 		}
@@ -279,11 +279,25 @@ public:
 };
 template<class Fun> decltype(auto) yy(Fun &&fun) { return y_combinator_result<std::decay_t<Fun>>(std::forward<Fun>(fun)); }
 
+struct chash {
+	// any random-ish large odd number will do
+	const uint64_t C = uint64_t(2e18 * PI) + 71;
+	// random 32-bit number
+	const uint32_t RANDOM =
+	    chrono::steady_clock::now().time_since_epoch().count();
+	size_t operator()(uint64_t x) const {
+		// see https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+		return __builtin_bswap64((x ^ RANDOM) * C);
+	}
+};
+template <class K, class V> using cmap = unordered_map<K, V, chash>;
+// example usage: cmap<int, int>
+
 void solve() {
 	$3
 }
 
-int main() {
+signed main() {
     setIO($1);
     
 	$2 
@@ -547,3 +561,213 @@ endsnippet
 snippet rng "rng"
 mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 endsnippet
+
+snippet pbtree "pbtree" 
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+template <class T> using Tree = tree<T, null_type, less<T>, 
+    rb_tree_tag, tree_order_statistics_node_update>;
+endsnippet
+
+snippet sparseSegTree "sparseSegTree"
+/**
+ * Description: Does not allocate storage for nodes with no data
+ * Source: USACO Mowing the Field
+ * Verification: ~
+ */ 
+
+const int SZ = 1<<17;
+template<class T> struct node {
+	T val = BIG; node<T>* c[2];
+	node() { c[0] = c[1] = NULL; }
+	void upd(int ind, T v, int L = 0, int R = SZ-1) { // add v
+		if (L == ind && R == ind) { ckmin(val, v); return; }
+		int M = (L+R)/2;
+		if (ind <= M) {
+			if (!c[0]) c[0] = new node();
+			c[0]->upd(ind,v,L,M);
+		} else {
+			if (!c[1]) c[1] = new node();
+			c[1]->upd(ind,v,M+1,R);
+		}
+		val = BIG; F0R(i,2) if (c[i]) ckmin(val, c[i]->val);
+	}
+	T query(int lo, int hi, int L = 0, int R = SZ-1) { // query sum of segment
+		if (hi < L || R < lo) return 0;
+		if (lo <= L && R <= hi) return val;
+		int M = (L+R)/2; T res = BIG;
+		if (c[0]) ckmin(res, c[0]->query(lo,hi,L,M));
+        if (c[1]) ckmin(res, c[1]->query(lo,hi,M+1,R));
+        return res;
+	}
+	void UPD(int ind, node* c0, node* c1, int L = 0, int R = SZ-1) { // for 2D segtree
+		if (L != R) {
+			int M = (L+R)/2;
+			if (ind <= M) {
+				if (!c[0]) c[0] = new node();
+				c[0]->UPD(ind,c0?c0->c[0]:NULL,c1?c1->c[0]:NULL,L,M);
+			} else {
+				if (!c[1]) c[1] = new node();
+				c[1]->UPD(ind,c0?c0->c[1]:NULL,c1?c1->c[1]:NULL,M+1,R);
+			}
+		} 
+		val = (c0?c0->val:0)+(c1?c1->val:0);
+	}
+};
+endsnippet
+
+snippet polyhash "polyhash" 
+#include <bits/stdc++.h>
+
+#define MAXLEN 1000010
+
+using namespace std;
+
+constexpr uint64_t mod = (1ULL << 61) - 1;
+
+const uint64_t seed = chrono::system_clock::now().time_since_epoch().count();
+const uint64_t base = mt19937_64(seed)() % (mod / 3) + (mod / 3);
+
+uint64_t base_pow[MAXLEN];
+
+int64_t modmul(uint64_t a, uint64_t b){
+    uint64_t l1 = (uint32_t)a, h1 = a >> 32, l2 = (uint32_t)b, h2 = b >> 32;
+    uint64_t l = l1 * l2, m = l1 * h2 + l2 * h1, h = h1 * h2;
+    uint64_t ret = (l & mod) + (l >> 61) + (h << 3) + (m >> 29) + (m << 35 >> 3) + 1;
+    ret = (ret & mod) + (ret >> 61);
+    ret = (ret & mod) + (ret >> 61);
+    return ret - 1;
+}
+
+void init(){
+    base_pow[0] = 1;
+    for (int i = 1; i < MAXLEN; i++){
+        base_pow[i] = modmul(base_pow[i - 1], base);
+    }
+}
+
+struct PolyHash{
+    /// Remove suff vector and usage if reverse hash is not required for more speed
+    vector<int64_t> pref, suff;
+
+    PolyHash() {}
+
+    template <typename T>
+    PolyHash(const vector<T>& ar){
+        if (!base_pow[0]) init();
+
+        int n = ar.size();
+        assert(n < MAXLEN);
+        pref.resize(n + 3, 0), suff.resize(n + 3, 0);
+
+        for (int i = 1; i <= n; i++){
+            pref[i] = modmul(pref[i - 1], base) + ar[i - 1] + 997;
+            if (pref[i] >= mod) pref[i] -= mod;
+        }
+
+        for (int i = n; i >= 1; i--){
+            suff[i] = modmul(suff[i + 1], base) + ar[i - 1] + 997;
+            if (suff[i] >= mod) suff[i] -= mod;
+        }
+    }
+
+    PolyHash(const char* str)
+        : PolyHash(vector<char> (str, str + strlen(str))) {}
+
+    uint64_t get_hash(int l, int r){
+        int64_t h = pref[r + 1] - modmul(base_pow[r - l + 1], pref[l]);
+        return h < 0 ? h + mod : h;
+    }
+
+    uint64_t rev_hash(int l, int r){
+        int64_t h = suff[l + 1] - modmul(base_pow[r - l + 1], suff[r + 2]);
+        return h < 0 ? h + mod : h;
+    }
+};
+endsnippet
+
+snippet SDST "SDST" 
+class SegmentTree // range set value, range query for sum segtree, can be easily modified for other things
+{
+    private:
+        ll n;
+        vector<long long> segtree;
+        vector<long long> lazy;
+    public:
+        void init(ll sz)
+        {
+            n = sz;
+            segtree.resize(1 + 4 * sz);
+            lazy.resize(1 + 4 * sz);
+        }
+        void lz(ll node, ll L, ll R)
+        {
+            if(lazy[node] > 0)
+                segtree[node] += lazy[node] * (R - L + 1);
+            else
+                segtree[node] = (-lazy[node]) * (R - L + 1);
+            if(L != R)
+            {
+                if(lazy[node] < 0)
+                {
+                    lazy[node << 1] = lazy[node];
+                    lazy[node << 1|1] = lazy[node];
+                }
+                else
+                {
+                    if(lazy[node << 1] < 0)
+                        lazy[node << 1] -= lazy[node];
+                    else
+                        lazy[node << 1] += lazy[node];
+                    if(lazy[node << 1|1] < 0)
+                        lazy[node << 1|1] -= lazy[node];
+                    else
+                        lazy[node << 1|1] += lazy[node];
+                }
+            }
+            lazy[node] = 0;
+        }
+        void build(ll node, ll L, ll R, vector<ll> &v)
+        {
+            if(L == R)
+            {
+                segtree[node] = v[L];
+                return;
+            }
+            ll mid = (L + R) / 2;
+            build(node << 1, L, mid, v);
+            build(node << 1|1, mid+1, R, v);
+            segtree[node] = segtree[node << 1] + segtree[node << 1|1];
+        }
+        void update(ll node, ll L, ll R, ll Lq, ll Rq, ll val)
+        {
+            if(lazy[node])
+                lz(node, L, R);
+            if(R < Lq || L > Rq)
+                return;
+            if(Lq <= L && R <= Rq)
+            {
+                lazy[node] = val;
+                lz(node, L, R);
+                return;
+            }
+            ll mid = (L + R) / 2;
+            update(node << 1, L, mid, Lq, Rq, val);
+            update(node << 1|1, mid+1, R, Lq, Rq, val);
+            segtree[node] = segtree[node << 1] + segtree[node << 1|1];
+        }
+        long long query(ll node, ll L, ll R, ll Lq, ll Rq)
+        {
+            if(lazy[node])
+                lz(node, L, R);
+            if(R < Lq || L > Rq)
+                return 0;
+            if(Lq <= L && R <= Rq)
+                return segtree[node];
+            ll mid = (L + R) / 2;
+            return query(node << 1, L, mid, Lq, Rq) + query(node << 1|1, mid+1, R, Lq, Rq);
+        }
+};
+endsnippet
+
